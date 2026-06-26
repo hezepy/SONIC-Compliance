@@ -25,7 +25,16 @@ build *build_type='Release':
 
 # Run a package
 run *package='hello':
-  @./target/release/{{package}}
+  @TRT_LIBS=""; \
+  if [ -n "${TensorRT_ROOT:-}" ] && [ -d "${TensorRT_ROOT}/lib" ]; then TRT_LIBS="${TensorRT_ROOT}/lib"; fi; \
+  if [ -d "/usr/local/cuda-12.8/targets/x86_64-linux/lib" ]; then \
+    if [ -n "$TRT_LIBS" ]; then TRT_LIBS="$TRT_LIBS:/usr/local/cuda-12.8/targets/x86_64-linux/lib"; else TRT_LIBS="/usr/local/cuda-12.8/targets/x86_64-linux/lib"; fi; \
+  fi; \
+  if [ -n "$TRT_LIBS" ]; then \
+    LD_LIBRARY_PATH="$TRT_LIBS:${LD_LIBRARY_PATH}" ./target/release/{{package}}; \
+  else \
+    ./target/release/{{package}}; \
+  fi
 
 # Run code quality tools
 test:

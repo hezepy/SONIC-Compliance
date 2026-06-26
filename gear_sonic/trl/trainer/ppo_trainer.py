@@ -12,10 +12,10 @@ from torch import nn
 from transformers import utils as transformers_utils
 from transformers.trainer import *  # noqa: F403
 from trl import models
-from trl.experimental.ppo import ppo_trainer
+from trl.experimental.ppo.ppo_trainer import *  # noqa: F403
+from trl.experimental.ppo import ppo_trainer  # noqa: F401
 from trl.models import utils as models_utils
 from trl.trainer import utils as trainer_utils
-from trl.trainer.ppo_trainer import *  # noqa: F403
 import wandb
 
 # Conditional peft imports

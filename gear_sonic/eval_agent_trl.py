@@ -431,6 +431,28 @@ def main(override_config: omegaconf.OmegaConf):
 
     checkpoint_path = str(config.checkpoint)
     logger.info(f"Loading checkpoint from {checkpoint_path}")
+
+    # Backward compatibility for checkpoints serialized with TRL < 0.28.0.
+    # Old pickle payloads reference modules under ``trl.trainer.*`` that moved to
+    # ``trl.experimental.ppo.*`` in newer TRL versions.
+    try:
+        from trl.experimental.ppo import ppo_config as _experimental_ppo_config
+
+        sys.modules.setdefault("trl.trainer.ppo_config", _experimental_ppo_config)
+    except ImportError:
+        logger.warning(
+            "Could not import trl.experimental.ppo.ppo_config; old checkpoint deserialization may fail."
+        )
+
+    try:
+        from trl.experimental.ppo import ppo_trainer as _experimental_ppo_trainer
+
+        sys.modules.setdefault("trl.trainer.ppo_trainer", _experimental_ppo_trainer)
+    except ImportError:
+        logger.warning(
+            "Could not import trl.experimental.ppo.ppo_trainer; old checkpoint deserialization may fail."
+        )
+
     checkpoint = torch.load(checkpoint_path, map_location=accelerator.device, weights_only=False)
 
     # Load policy state dict with backward compatibility for std/log_std

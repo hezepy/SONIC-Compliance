@@ -1,5 +1,5 @@
 from transformers.trainer_callback import *
-from trl.trainer.ppo_trainer import *
+from trl.experimental.ppo.ppo_trainer import *
 
 
 class HVCallbackHandler(TrainerCallback):
